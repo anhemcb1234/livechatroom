@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Live Chat</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="./websiteplanet.com-favicons/favicons/favicon-16x16.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+    <style>
+     * { 
+    margin: 0; 
+    padding: 0;
+    font-family: "Open Sans", sans-serif;
+    box-sizing: border-box;
+
+}
+
+#form { 
+    background: rgba(0, 0, 0, 0.15);
+    padding: 0.25rem; 
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    right: 0; 
+    display: flex; 
+    height: 3rem; 
+    box-sizing: border-box; 
+    backdrop-filter: 
+    blur(10px); 
+}
+#input { 
+    border: none;
+    padding: 0 1rem;
+    flex-grow: 1;
+    border-radius: 2rem;
+    margin: 0.25rem; }
+#input:focus { 
+    outline: none;
+ }
+#form > button { 
+    background: #333;
+    border: none;
+    padding: 0 1rem;
+    margin: 0.25rem;
+    border-radius: 4px;
+    outline: none;
+    color: #fff; 
+    cursor: pointer;
+    transition: 2s ease;
+}
+#form > button:hover {
+  color: #333;
+  background-color: #fff;
+}
+
+#message-container > div {
+     padding: 0.5rem 1rem; 
+     
+    }
+#message-container > div:nth-child(odd) { 
+    background: #efefef; 
+}
+#chating {
+  display: none;
+}
+
+.logo {
+    position: absolute;
+    z-index: 1;
+    margin: 30px 40px;
+}
+body {
+    background-size: 100%;
+    background-image: url('https://cdn.dribbble.com/users/2393242/screenshots/16427934/media/ee096edb8a148299ccce6b36c89530c9.png?compress=1&resize=800x600');
+}
+.main {
+    display: flex;
+    min-height: 100vh;
+    border: 1px;
+    border-radius: 8px;
+    justify-content: center;
+    color: black;
+    align-items: center;
+}
+
+.form {
+    width: 451px;
+    min-height: 100px;
+    padding: 32px 24px;
+    text-align: center;
+    background: #fff;
+    border-radius: 8px;
+    margin: 24px;
+    box-shadow: 0 2px 5px 0 rgba(51, 62, 73, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+}
+.form .desc {
+    text-align: center;
+    color: #636d77;
+    font-size: 1.6rem;
+    font-weight: lighter;
+    line-height: 2.4rem;
+    margin-top: 16px;
+    font-weight: 300;
+}
+.form-control {
+    display: flex;
+    flex-direction: column;
+
+}
+.form-mess {
+    margin-bottom: 12px;
+}
+.form-label, .form-mess {
+    text-align: left;
+}
+.form .heading {
+    font-weight: 600;
+    font-size: 29px;
+}
+.form-label {
+    margin-left: 3px;
+    margin-bottom: 12px;
+    font-size: 18px;
+    font-weight: 600;
+}
+.form .link {
+    text-decoration: none;
+    color: #ae50c5;
+}
+
+.space {
+    margin-bottom: 51px;
+}
+.form-input {
+    margin-bottom: 16px;
+    font-size: 16px;
+    line-height: 32px;
+    padding: 6px;
+    border-radius: 8px;
+    outline: none;
+}
+.form-submit {
+    width: 100%;
+    padding: 17px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 20px;
+    background-color: #ae50c5;
+    color: #fff;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.or {
+    
+    margin-bottom: -9px;
+}
+.or-content {
+    
+    z-index: 1;
+}
+.google {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 16px;
+    background-color: #fff;
+    color: rgb(222, 144, 241);
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.form-label:hover, .form-input:hover {
+    border-color: rgb(222, 144, 241);
+    transition: 1s ease;
+}
+
+.google:hover, .form-submit:hover {
+    background-color: rgb(222, 144, 241);
+    color: #fff;
+    transition: 2s ease;
+}
+
+  </style>
+  </head>
+  <body>
+    <div class="main">
+        <form action=""class='form'>
+            
+            <h3 class="heading">Live Chat</h3>
+            <p class="desc">Kết nối mọi người <span><a href="#" class="link">vào chat liền!</a></span></p>
+
+            <div class="space"></div>
+
+            <div class="form-control">
+                <label for="name" class="form-label">Tên đăng nhập</label>
+                <input type="text" maxlength="15" class="form-input" id="email" placeholder="Nhập tên hiển thị">
+                <span class="form-mess"></span>
+            </div>
+            <a class="form-submit">Đăng nhập</a>
+        </form>
+    </div>
+    <div id="chating">
+    <div id="message-container"></div>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" />
+      <button id="send-button">Send</button>
+    </form>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+    const socket = io('http://localhost:3000')
+    const messageContainer = document.getElementById('message-container')
+    const messageForm = document.getElementById('form')
+    const messageInput = document.getElementById('input')
+    const nameValue = document.querySelector('#email');
+    const main = document.querySelector('.main')
+    const chating = document.querySelector('#chating');
+    const button = document.querySelector('.form-submit');
+  
+    button.onclick = () => {
+      main.setAttribute('style','display:none');
+      chating.setAttribute('style','display:inline');
+      const name = nameValue.value;
+     
+      appendMessage('You joined')
+    socket.emit('new-user', name)
+
+    socket.on('chat-message', data => {
+  appendMessage(`${data.name}: ${data.message}`)
+    })
+
+    socket.on('user-connected', name => {
+  appendMessage(`${name} connected`)
+    })
+
+    socket.on('user-disconnected', name => {
+  appendMessage(`${name} disconnected`)
+    })
+
+    }
+    
+    
+    
+    
+    
+    
+    messageForm.addEventListener('submit', e => {
+  e.preventDefault()
+  const message = messageInput.value
+  appendMessage( `You: ${message}`)
+  socket.emit('send-chat-message', message)
+  messageInput.value = ''
+})
+
+    function appendMessage(message) {
+  const messageElement = document.createElement('div')
+  messageElement.innerText = message
+  messageContainer.append(messageElement)
+}
+
+    </script>
+    <script defer src="http://localhost:3000/socket.io/socket.io.js"></script>
+  </body>
+</html>
